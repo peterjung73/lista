@@ -33,7 +33,6 @@ jupyter notebook plot_results_communication.ipynb
 ### Remarks
 
 - Without a GPU the experiments take a lot of time.
-- We provide some precomputed results in the ```res/``` folder.
 
 
 
