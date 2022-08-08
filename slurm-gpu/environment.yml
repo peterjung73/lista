@@ -1,0 +1,12 @@
+channels:
+  - pytorch
+  - anaconda
+  - conda-forge
+  - defaults
+dependencies:
+  - cudatoolkit=11.0
+  - cudnn
+  - pytorch==1.7.0
+  - numpy==1.18.5
+  - matplotlib==3.2.2
+  - pandas
