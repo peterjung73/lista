@@ -1,0 +1,27 @@
+Bootstrap: docker
+From: pytorch/pytorch:1.7.0-cuda11.0-cudnn8-runtime
+
+%environment
+    export PATH=/anaconda/bin:$PATH
+
+    export PROJ_ROOT="/mnt/project"
+    export PYTHONPATH=$PROJ_ROOT
+
+    export NVIDIA_VISIBLE_DEVICES=0
+    export CUDA_VISIBLE_DEVICES=0
+
+%files
+    ./slurm-gpu/environment.yml /opt/environment.yml
+
+%post
+
+    conda update conda
+    conda env update --name base --file /opt/environment.yml
+
+%runscript
+
+    cd ${PROJ_ROOT} || exit
+
+    echo "GPU: $CUDA_VISIBLE_DEVICES"
+
+    python "$@"
