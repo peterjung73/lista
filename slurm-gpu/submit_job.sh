@@ -9,7 +9,7 @@
 #SBATCH --partition=gpu
 #SBATCH --gres=gpu:1
 #SBATCH --mem-per-gpu=4GB
-##SBATCH --array=0-3
+#SBATCH --array=0-7
 
 
 # include the definition of the LOCAL_JOB_DIR which is autoremoved after each job
@@ -24,4 +24,14 @@ if [ $# -eq 0 ]
 fi
 CODE_MNT="/mnt/project"
 
-singularity run --nv --bind ${CODE_DIR}:${CODE_MNT} ./slurm-gpu/torch170-cuda110.sif run.py
+MODEL_FUNCS=("NA_ALISTA_UR_128" "ALISTA_AT" "ALISTA" "FISTA" "ISTA" "AGLISTA" "NA_ALISTA_U_128" "NA_ALISTA_R_128")
+fn=${MODEL_FUNCS[$SLURM_ARRAY_TASK_ID]}
+
+for k in 10 12 14 16 ; do
+    for n in 750 500 1000 ; do
+        for snr in 40 20 ; do
+            singularity run --nv --bind "${CODE_DIR}:${CODE_MNT}" ./slurm-gpu/torch170-cuda110.sif run.py \
+            -k "$k" -n "$n" -N "$snr" -f "$fn"
+        done
+    done
+done

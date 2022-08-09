@@ -37,44 +37,72 @@ will be approximately one hour (400 epochs).
 model_dir = 'res/models/'
 
 # Default settings for reproducing our experiments.
-m = 250  # measurements
-s = 50  # sparsity
-lr = 0.2 * 10e-4  # learning rate
+M_DEFAULT = 250  # measurements
+S_DEFAULT = 50  # sparsity
+LR_DEFAULT = 0.2 * 10e-4  # learning rate
 
-for model_func in [NA_ALISTA_UR_128, ALISTA_AT, ALISTA, FISTA, ISTA, AGLISTA, NA_ALISTA_U_128, NA_ALISTA_R_128]:
+func_dict = {fn.__name__: fn for fn in
+             (NA_ALISTA_UR_128, ALISTA_AT, ALISTA, FISTA, ISTA, AGLISTA, NA_ALISTA_U_128, NA_ALISTA_R_128)}
+func_names = tuple(func_dict.keys())
 
-    for k in [10, 12, 14, 16]: # number of iterations that the ISTA-style method is executed
 
-        epoch = 100 + 20 * k
+def run(args):
 
-        for n in [750, 500, 1000]: # input size
+    model_func = func_dict[args.model_func]
+    m = args.measurements
+    s = args.sparsity
+    k = args.k
+    n = args.n
+    lr = args.learning_rate
 
-            for noisename, noisefn in [["GaussianNoise40", GaussianNoise(40)], ["GaussianNoise20", GaussianNoise(20)]]:
+    noisefn = GaussianNoise(args.noise)
+    noisename = f"GaussianNoise{args.noise:.0f}"
 
-                # apply the p-trick
-                p = (np.linspace((s * 1 * 1.2) // k, s * 1 * 1.2, k)).astype(int)
+    epoch = 100 + 20 * k
 
-                params = {
-                    'model': model_func.__name__,
-                    'm': m,
-                    's': s,
-                    'k': k,
-                    'noise': noisename,
-                    'n': n,
-                }
+    # apply the p-trick
+    p = (np.linspace((s * 1 * 1.2) // k, s * 1 * 1.2, k)).astype(int)
 
-                # filename for saving, do not change if you intend to use plot_results.ipynb
-                name = '__'.join([f"{k}={v}" for k, v in params.items()])
+    params = {
+        'model': args.model_func,
+        'm': m,
+        's': s,
+        'k': k,
+        'noise': noisename,
+        'n': n,
+    }
 
-                print(f"Running: {name}")
+    # filename for saving, do not change if you intend to use plot_results.ipynb
+    name = '__'.join([f"{k}={v}" for k, v in params.items()])
 
-                # trains and saves model along with some training metrics
-                train_model(m=m, n=n, s=s, k=k, p=p,
-                            model_fn=model_func,
-                            noise_fn=noisefn,
-                            epochs=epoch,
-                            initial_lr=lr,
-                            name=name,
-                            model_dir=model_dir)
+    print(f"Running: {name}")
 
-                print("Done.")
+    # trains and saves model along with some training metrics
+    train_model(m=m, n=n, s=s, k=k, p=p,
+                model_fn=model_func,
+                noise_fn=noisefn,
+                epochs=epoch,
+                initial_lr=lr,
+                name=name,
+                model_dir=model_dir)
+
+    print("Done.")
+
+
+if __name__ == '__main__':
+
+    import argparse
+
+    parser = argparse.ArgumentParser(description='Code to reproduce the results from Neurally Augmented ALISTA, '
+                                                 'ICLR 2021 by Freya Behrens, Jonathan Sauder, Peter Jung.')
+
+    parser.add_argument("--measurements", "-m", type=int, default=M_DEFAULT, help="Number of measurements")
+    parser.add_argument("--sparsity", "-s", type=float, default=S_DEFAULT, help="Sparsity level")
+    parser.add_argument("--learning-rate", "-l", type=float, default=LR_DEFAULT, help="Learning rate")
+    parser.add_argument("-k", type=int, help="Number of iterations that the ISTA-style method is executed")
+    parser.add_argument("-n", type=int, help="Input size")
+    parser.add_argument("--noise", "-N", type=float, help="Reference SNR level to produce Gaussian Noise")
+    parser.add_argument("--model-func", "-f", type=str, choices=func_names, metavar="MODEL_FN",
+                        help=f"Model function to choose from {func_names}")
+
+    run(parser.parse_args())
