@@ -82,7 +82,7 @@ def run_synth(args):
     params = {
         'model': args.model_func,
         'm': m,
-        's': s,
+        's': round(s),
         'k': k,
         'noise': noisename,
         'n': n,
@@ -134,9 +134,9 @@ def run_com(args):
     p = (np.linspace((s * 1 * 1.5) // k, s * 1 * 1.5, k)).astype(int)
     p = p.clip(3, 10)
     params = {
-        'model': model_func.__name__,
+        'model': args.model_func,
         'm': m,
-        's': s,
+        's': round(s),
         'k': k,
         'noise': noisename,
         'n': n,
@@ -149,7 +149,7 @@ def run_com(args):
 
     # trains and saves model along with some training metrics
     train_model_communication(m=m, n=n, s=s, k=k, p=p,
-                              model_fn=params['model'],
+                              model_fn=model_func,
                               noise_fn=noisefn,
                               epochs=epoch,
                               initial_lr=lr,
