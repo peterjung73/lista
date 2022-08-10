@@ -107,17 +107,6 @@ def run_synth(args):
 
 def run_com(args):
 
-
-    # for model_func in [ALISTA, FISTA, ISTA, AGLISTA]:
-    #
-    #     for k in [1, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24]: # number of iterations that the ISTA-style method is executed
-    #
-    #         epoch = 70 + 9 * k
-    #
-    #         for n in [256]: # input size
-    #
-    #             for noisename, noisefn in [["GaussianNoise10", GaussianNoise(10)]]:
-
     model_func = func_com[args.model_func]
     m = args.measurements
     s = args.sparsity
