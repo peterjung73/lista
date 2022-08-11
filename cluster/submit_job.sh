@@ -42,4 +42,4 @@ echo "Executing job $((SLURM_ARRAY_TASK_ID+1))/${#all_args[@]} with the followin
 echo $args
 echo ""
 
-singularity run --nv --bind "${CODE_DIR}:${CODE_MNT}" ./slurm-gpu/torch170-cuda110.sif run.py synthetic $args
+singularity run --nv --bind "${CODE_DIR}:${CODE_MNT}" ./cluster/torch170-cuda110.sif run.py synthetic $args

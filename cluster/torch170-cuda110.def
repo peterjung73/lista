@@ -11,7 +11,7 @@ From: pytorch/pytorch:1.7.0-cuda11.0-cudnn8-runtime
     export CUDA_VISIBLE_DEVICES=0
 
 %files
-    ./slurm-gpu/environment.yml /opt/environment.yml
+    ./cluster/environment.yml /opt/environment.yml
 
 %post
 
